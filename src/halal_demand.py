@@ -7,7 +7,7 @@ import pandas as pd
 from numpy import log1p
 from scipy.stats import beta as _beta_dist
 
-from src.config import CFG, ModelConfig
+from src.config import CFG
 from src.halal_utils import minmax as _minmax
 
 
@@ -157,7 +157,9 @@ def build_demand() -> pd.DataFrame:
     )
     grouped["demand_score"] = _minmax(grouped["shrunk_share"])
     grouped["review_count_flag"] = grouped["total_reviews"].apply(
-        lambda x: "low confidence" if x < CFG.low_confidence_threshold else "high confidence"
+        lambda x: (
+            "low confidence" if x < CFG.low_confidence_threshold else "high confidence"
+        )
     )
     grouped = grouped.rename(columns={"nta": "nta_id"})
 
@@ -167,14 +169,18 @@ def build_demand() -> pd.DataFrame:
         pop_df["nta_id"] = pop_df["nta_id"].astype(str).str[:4]
         pop_df = pop_df.groupby("nta_id", as_index=False)["population"].sum()
         grouped = grouped.merge(pop_df, on="nta_id", how="left")
-        grouped["population"] = grouped["population"].fillna(grouped["population"].median())
+        grouped["population"] = grouped["population"].fillna(
+            grouped["population"].median()
+        )
     else:
         grouped["population"] = 0.0
     grouped["demand_per_capita"] = (
-        (grouped["halal_count"] / grouped["population"].replace(0, pd.NA)) * 1000
-    ).fillna(0.0).clip(lower=0.0)
+        ((grouped["halal_count"] / grouped["population"].replace(0, pd.NA)) * 1000)
+        .fillna(0.0)
+        .clip(lower=0.0)
+    )
     # Bayesian Beta credible intervals (80%) for halal share
-    h = grouped['halal_count'].clip(lower=0)
+    h = grouped["halal_count"].clip(lower=0)
     n = grouped["total_reviews"].clip(lower=1)
     grouped["demand_ci_lo"] = _beta_dist.ppf(0.1, h + 1, n - h + 1)
     grouped["demand_ci_hi"] = _beta_dist.ppf(0.9, h + 1, n - h + 1)

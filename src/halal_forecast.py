@@ -9,7 +9,6 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import KFold, cross_val_score
 
 from src.config import CFG
-from src.halal_utils import HALAL_CUISINES
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
@@ -123,7 +122,9 @@ def build_forecast():
 
     print(f"Forecast sample size after join: {len(model_df)}")
 
-    cv = KFold(n_splits=CFG.ridge_cv_folds, shuffle=True, random_state=CFG.ridge_random_state)
+    cv = KFold(
+        n_splits=CFG.ridge_cv_folds, shuffle=True, random_state=CFG.ridge_random_state
+    )
     model = RidgeCV(alphas=[0.001, 0.01, 0.1, 1.0, 10.0, 100.0], cv=cv)
     model.fit(X, y)
     best_alpha = float(model.alpha_)
@@ -193,10 +194,14 @@ def build_entry_forecast():
     ].copy()
 
     df_insp = pd.read_parquet(INSPECTIONS)
-    df_insp["inspection_date"] = pd.to_datetime(df_insp["inspection_date"], errors="coerce")
+    df_insp["inspection_date"] = pd.to_datetime(
+        df_insp["inspection_date"], errors="coerce"
+    )
     df_insp["year"] = df_insp["inspection_date"].dt.year
     df_insp = df_insp[df_insp["year"].between(2010, 2025)].copy()
-    df_insp["cuisine_lower"] = df_insp["cuisine_type"].fillna("").str.strip().str.lower()
+    df_insp["cuisine_lower"] = (
+        df_insp["cuisine_type"].fillna("").str.strip().str.lower()
+    )
     halal_insp = df_insp[df_insp["cuisine_lower"].isin(CFG.halal_cuisines)].dropna(
         subset=["restaurant_id", "nta_id", "inspection_date"]
     )
@@ -206,9 +211,9 @@ def build_entry_forecast():
         .rename(columns={"inspection_date": "first_seen_date"})
     )
     first_seen["first_year"] = first_seen["first_seen_date"].dt.year
-    camis_nta = halal_insp.sort_values("inspection_date").drop_duplicates("restaurant_id")[
-        ["restaurant_id", "nta_id"]
-    ]
+    camis_nta = halal_insp.sort_values("inspection_date").drop_duplicates(
+        "restaurant_id"
+    )[["restaurant_id", "nta_id"]]
     new_halal = camis_nta.merge(
         first_seen[["restaurant_id", "first_year"]], on="restaurant_id", how="inner"
     )
@@ -259,17 +264,41 @@ def build_entry_forecast():
     print(f"Entry forecast sample size after join: {len(model_df)}")
 
     if len(model_df) < CFG.ridge_cv_folds:
-        print(f'Insufficient samples ({len(model_df)}) for entry forecast — using halal presence fallback')
-        phase1_full = pd.read_csv(OUT_DIR / 'phase1_cluster_assignments.csv') if (OUT_DIR / 'phase1_cluster_assignments.csv').exists() else pd.DataFrame(columns=['nta_id','halal_supply_rate'])
-        fallback = phase1_full[['nta_id']].copy() if 'nta_id' in phase1_full.columns else pd.DataFrame(columns=['nta_id'])
-        fallback['new_halal_entry_forecast'] = 0.0
-        coef_df = pd.DataFrame({'feature': feature_cols, 'coefficient': [0.0]*len(feature_cols)})
-        ablation_rows = [{'feature': c, 'r2_mean': 0.0, 'r2_std': 0.0} for c in feature_cols]
+        print(
+            f"Insufficient samples ({len(model_df)}) for entry forecast — using halal presence fallback"
+        )
+        phase1_full = (
+            pd.read_csv(OUT_DIR / "phase1_cluster_assignments.csv")
+            if (OUT_DIR / "phase1_cluster_assignments.csv").exists()
+            else pd.DataFrame(columns=["nta_id", "halal_supply_rate"])
+        )
+        fallback = (
+            phase1_full[["nta_id"]].copy()
+            if "nta_id" in phase1_full.columns
+            else pd.DataFrame(columns=["nta_id"])
+        )
+        fallback["new_halal_entry_forecast"] = 0.0
+        coef_df = pd.DataFrame(
+            {"feature": feature_cols, "coefficient": [0.0] * len(feature_cols)}
+        )
+        ablation_rows = [
+            {"feature": c, "r2_mean": 0.0, "r2_std": 0.0} for c in feature_cols
+        ]
         ablation_df = pd.DataFrame(ablation_rows)
-        diag = {'r2_insample': 0.0, 'r2_std': 0.0, 'baseline_r2': 0.0, 'coefficients': coef_df, 'ablation': ablation_df, 'top_actual': pd.DataFrame(), 'bottom_actual': pd.DataFrame()}
+        diag = {
+            "r2_insample": 0.0,
+            "r2_std": 0.0,
+            "baseline_r2": 0.0,
+            "coefficients": coef_df,
+            "ablation": ablation_df,
+            "top_actual": pd.DataFrame(),
+            "bottom_actual": pd.DataFrame(),
+        }
         return fallback, diag
 
-    cv = KFold(n_splits=CFG.ridge_cv_folds, shuffle=True, random_state=CFG.ridge_random_state)
+    cv = KFold(
+        n_splits=CFG.ridge_cv_folds, shuffle=True, random_state=CFG.ridge_random_state
+    )
     model = RidgeCV(alphas=[0.001, 0.01, 0.1, 1.0, 10.0, 100.0], cv=cv)
     model.fit(X, y)
     best_alpha = float(model.alpha_)

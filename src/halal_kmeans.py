@@ -27,7 +27,9 @@ class HalalKMeans:
         centroids = [X[first_idx].copy()]
         for _ in range(1, self.k):
             C = np.array(centroids)  # shape (len_so_far, d)
-            sq_dists = ((X[:, None, :] - C[None, :, :]) ** 2).sum(axis=-1)  # (n, len_so_far)
+            sq_dists = ((X[:, None, :] - C[None, :, :]) ** 2).sum(
+                axis=-1
+            )  # (n, len_so_far)
             dists = sq_dists.min(axis=1)  # (n,)
             total = dists.sum()
             probs = dists / total if total > 0 else np.ones(len(X)) / len(X)
@@ -60,6 +62,7 @@ class HalalKMeans:
 def run_kmeans(df: pd.DataFrame, feature_cols: list[str], k: int = 4, cfg=None):
     if cfg is None:
         from src.config import CFG
+
         cfg = CFG
 
     work = df.dropna(subset=feature_cols).copy()

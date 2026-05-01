@@ -5,7 +5,8 @@ from __future__ import annotations
 import streamlit as st
 
 from pathlib import Path
-_img = Path(__file__).resolve().parent.parent / 'assets' / 'approach_diagram.png'
+
+_img = Path(__file__).resolve().parent.parent / "assets" / "approach_diagram.png"
 if _img.exists():
     st.image(str(_img))
 
@@ -77,7 +78,9 @@ def render_methodology_page() -> None:
     with col1:
         st.markdown("**Features used:**")
         st.markdown("- `demand_score` — halal Yelp review share (proxy)")
-        st.markdown("- `latent_demand_score` — implicit halal interest from review labels, keyword density, and log-normalized volume")
+        st.markdown(
+            "- `latent_demand_score` — implicit halal interest from review labels, keyword density, and log-normalized volume"
+        )
         st.markdown("- `halal_supply_rate` — halal cuisine density (proxy)")
         st.markdown("- `halal_cuisine_diversity_norm` — normalized cuisine diversity")
     with col2:
@@ -86,7 +89,9 @@ def render_methodology_page() -> None:
         st.markdown("- 🔵 Established Hub — strong existing halal scene")
         st.markdown("- 🟢 Growing Market — moderate demand, little supply")
         st.markdown("- ⚫ Low Demand — limited halal activity")
-    st.write("`latent_demand_score` captures implicit halal interest from review labels, keyword density in review text, and log-normalized review volume. It surfaces demand in neighborhoods without established halal restaurants.")
+    st.write(
+        "`latent_demand_score` captures implicit halal interest from review labels, keyword density in review text, and log-normalized review volume. It surfaces demand in neighborhoods without established halal restaurants."
+    )
     st.caption("Silhouette score: 0.3963 · k=4 selected by elbow method")
 
     st.divider()

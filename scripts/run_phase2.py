@@ -28,7 +28,9 @@ def main() -> None:
     df["risk_bucket"] = df["risk_bucket"].fillna("Unknown")
 
     df["final_score"] = (
-        CFG.score_demand_weight * df["demand_score"] + CFG.score_gap_weight * df["gap_score"] + CFG.score_viability_weight * df["viability_score"]
+        CFG.score_demand_weight * df["demand_score"]
+        + CFG.score_gap_weight * df["gap_score"]
+        + CFG.score_viability_weight * df["viability_score"]
     )
 
     feature_cols = ["demand_score", "halal_supply_rate", "gap_score", "viability_score"]

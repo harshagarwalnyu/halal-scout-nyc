@@ -68,12 +68,18 @@ def _zscore(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
 def build_viability(cfg=CFG) -> pd.DataFrame:
     agg = _load_inspection_agg()
 
-    tmp = _zscore(agg[['grade_a_rate', 'critical_rate']], ['grade_a_rate', 'critical_rate'])
-    raw = tmp['grade_a_rate'] - tmp['critical_rate']
+    tmp = _zscore(
+        agg[["grade_a_rate", "critical_rate"]], ["grade_a_rate", "critical_rate"]
+    )
+    raw = tmp["grade_a_rate"] - tmp["critical_rate"]
     agg["viability_score"] = _minmax(raw)
 
     agg["risk_bucket"] = agg["viability_score"].apply(
-        lambda v: "Low" if v >= cfg.viability_low_threshold else ("Medium" if v >= cfg.viability_medium_threshold else "High")
+        lambda v: (
+            "Low"
+            if v >= cfg.viability_low_threshold
+            else ("Medium" if v >= cfg.viability_medium_threshold else "High")
+        )
     )
 
     return agg[
@@ -100,11 +106,17 @@ def build_gmm_risk(cfg=CFG):
 
     bic_rows = []
     for n in [2, 3, 4]:
-        g = GaussianMixture(n_components=n, covariance_type="full", random_state=cfg.gmm_random_state)
+        g = GaussianMixture(
+            n_components=n, covariance_type="full", random_state=cfg.gmm_random_state
+        )
         g.fit(z.to_numpy())
         bic_rows.append({"n_components": n, "bic": g.bic(z.to_numpy())})
 
-    gmm = GaussianMixture(n_components=cfg.gmm_n_components, covariance_type="full", random_state=cfg.gmm_random_state)
+    gmm = GaussianMixture(
+        n_components=cfg.gmm_n_components,
+        covariance_type="full",
+        random_state=cfg.gmm_random_state,
+    )
     gmm.fit(z.to_numpy())
     probs = gmm.predict_proba(z.to_numpy())
     labels = gmm.predict(z.to_numpy())

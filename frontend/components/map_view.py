@@ -127,7 +127,12 @@ def render_map_view(df: pd.DataFrame) -> None:
         # let users quickly focus one borough in the map only.
         available_prefixes = sorted(
             p
-            for p in points_df["nta_id"].astype(str).str[:2].str.upper().unique().tolist()
+            for p in points_df["nta_id"]
+            .astype(str)
+            .str[:2]
+            .str.upper()
+            .unique()
+            .tolist()
             if p in PREFIX_TO_BOROUGH
         )
         available_boroughs = [PREFIX_TO_BOROUGH[p] for p in available_prefixes]

@@ -1,6 +1,6 @@
 # System Design & Algorithmic Framework
 
-**Project:** NYC Halal Market Intelligence & Opportunity Engine  
+**Project:** NYC Halal Market Intelligence & Opportunity Engine
 **Team:** Amanda Dong (`yd2825`), Tony Zhao (`sz3822`), Harsh Agarwal (`ha2957`), Siqi Zhu (`sz3950`), Catherine Yi (`cgy2014`)
 
 ---

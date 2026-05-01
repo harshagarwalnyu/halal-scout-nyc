@@ -5,13 +5,11 @@ import sys
 
 import pandas as pd
 from sklearn.metrics import silhouette_score
-import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.config import CFG
 from src.halal_demand import build_demand
 from src.halal_opportunity import build_gap, build_supply
 from src.halal_kmeans import HalalKMeans, run_kmeans
@@ -25,7 +23,12 @@ def main() -> None:
     supply = build_supply()
     merged = build_gap(demand, supply)
 
-    feature_cols = ['demand_score', 'latent_demand_score', 'halal_supply_rate', 'halal_cuisine_diversity_norm']
+    feature_cols = [
+        "demand_score",
+        "latent_demand_score",
+        "halal_supply_rate",
+        "halal_cuisine_diversity_norm",
+    ]
 
     elbow_df = merged.dropna(subset=feature_cols).copy()
     means_all = elbow_df[feature_cols].mean()
@@ -105,30 +108,34 @@ def main() -> None:
         print(top3.to_string(index=False))
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    extra_demand_cols = [c for c in ['demand_per_capita', 'population', 'demand_ci_lo', 'demand_ci_hi'] if c in clustered.columns]
+    extra_demand_cols = [
+        c
+        for c in ["demand_per_capita", "population", "demand_ci_lo", "demand_ci_hi"]
+        if c in clustered.columns
+    ]
     assignments = clustered[
         [
-            'nta_id',
-            'cluster_id',
-            'market_type',
-            'demand_score',
-            'halal_supply_rate',
-            'gap_score',
-            'halal_cuisine_diversity',
+            "nta_id",
+            "cluster_id",
+            "market_type",
+            "demand_score",
+            "halal_supply_rate",
+            "gap_score",
+            "halal_cuisine_diversity",
         ]
         + extra_demand_cols
         + [
             c
             for c in [
-                'cluster_confidence',
-                'latent_demand_score',
-                'halal_cuisine_diversity_norm',
-                'total_restaurants',
-                'halal_restaurants',
+                "cluster_confidence",
+                "latent_demand_score",
+                "halal_cuisine_diversity_norm",
+                "total_restaurants",
+                "halal_restaurants",
             ]
             if c in clustered.columns
         ]
-    ].sort_values(['cluster_id', 'nta_id'])
+    ].sort_values(["cluster_id", "nta_id"])
     assignments.to_csv(OUT_DIR / "phase1_cluster_assignments.csv", index=False)
     centroid_df.to_csv(OUT_DIR / "phase1_cluster_centroids.csv", index=False)
     elbow_table.to_csv(OUT_DIR / "phase1_elbow_table.csv", index=False)

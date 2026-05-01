@@ -32,27 +32,27 @@ MARKET_TYPE_COLOR = {
 def render_analytics_view(df_all: pd.DataFrame, df_filtered: pd.DataFrame) -> None:
     """Rich analytics for Tab 3."""
     import plotly.express as px
-    
+
     st.markdown("### 🔍 Market Analysis Deep-Dive")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.markdown("#### Score Distribution by Market Type")
         fig_box = px.box(
-            df_all, 
-            x="market_type", 
-            y="final_score", 
+            df_all,
+            x="market_type",
+            y="final_score",
             color="market_type",
             color_discrete_map=MARKET_TYPE_COLOR,
             points="all",
-            title="Where does your shortlist sit?"
+            title="Where does your shortlist sit?",
         )
         fig_box.update_layout(
             showlegend=False,
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font={'color': "#2C2010"},
+            font={"color": "#2C2010"},
             xaxis=dict(color="#2C2010"),
             yaxis=dict(color="#2C2010"),
         )
@@ -68,29 +68,38 @@ def render_analytics_view(df_all: pd.DataFrame, df_filtered: pd.DataFrame) -> No
             size="final_score",
             hover_name="nta_id",
             color_discrete_map=MARKET_TYPE_COLOR,
-            title="Strategic Positioning"
+            title="Strategic Positioning",
         )
         fig_scatter.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font={'color': "#2C2010"},
+            font={"color": "#2C2010"},
             xaxis=dict(color="#2C2010"),
             yaxis=dict(color="#2C2010"),
         )
-        st.plotly_chart(fig_scatter, use_container_width=True, key="analytics_scatter_gap")
+        st.plotly_chart(
+            fig_scatter, use_container_width=True, key="analytics_scatter_gap"
+        )
 
     st.divider()
-    
+
     st.markdown("#### 📋 Full Comparison Table")
     st.caption("Sort and filter the entire dataset used for this model.")
-    
+
     st.dataframe(
-        df_all[[
-            "nta_id", "market_type", "final_score", 
-            "demand_score", "gap_score", "viability_score", "risk_bucket"
-        ]].sort_values("final_score", ascending=False),
+        df_all[
+            [
+                "nta_id",
+                "market_type",
+                "final_score",
+                "demand_score",
+                "gap_score",
+                "viability_score",
+                "risk_bucket",
+            ]
+        ].sort_values("final_score", ascending=False),
         use_container_width=True,
-        hide_index=True
+        hide_index=True,
     )
 
 
@@ -102,7 +111,7 @@ def render_results_panel(
     df_all: pd.DataFrame | None = None,
 ) -> None:
     st.subheader("Best Matches")
-    
+
     with st.expander("🧪 Formula Sandbox (Weights)", expanded=False):
         st.markdown("""
         The **Overall Fit Score** is currently calculated as:
@@ -113,9 +122,7 @@ def render_results_panel(
         st.info("Custom weight adjustment is coming in Phase 4.")
 
     if df is None or df.empty:
-        st.warning(
-            "No neighborhoods match your current filters."
-        )
+        st.warning("No neighborhoods match your current filters.")
         return
 
     top_row = df.iloc[0]
@@ -143,5 +150,5 @@ def render_results_panel(
         file_name="halal_shortlist.csv",
         mime="text/csv",
         use_container_width=True,
-        key="export_shortlist_btn"
+        key="export_shortlist_btn",
     )

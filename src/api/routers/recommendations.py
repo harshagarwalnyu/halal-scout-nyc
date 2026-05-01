@@ -417,15 +417,23 @@ def _estimate_survival_risk(
 ) -> float:
     """Estimate survival risk with risk-side signals (separate from opportunity)."""
     base_risk = 1.0 - float(np.clip(baseline_survival_score, 0.0, 1.0))
-    rent_pressure = float(np.clip(_safe_float(features.get("rent_pressure"), 0.35), 0.0, 1.0))
+    rent_pressure = float(
+        np.clip(_safe_float(features.get("rent_pressure"), 0.35), 0.0, 1.0)
+    )
     competition = float(
-        np.clip(_safe_float(features.get("restaurant_count_static"), 0.0) / 60.0, 0.0, 1.0)
+        np.clip(
+            _safe_float(features.get("restaurant_count_static"), 0.0) / 60.0, 0.0, 1.0
+        )
     )
     inspection_quality = float(
-        np.clip(_safe_float(features.get("inspection_grade_avg_static"), 0.75), 0.0, 1.0)
+        np.clip(
+            _safe_float(features.get("inspection_grade_avg_static"), 0.75), 0.0, 1.0
+        )
     )
     license_velocity = float(_safe_float(features.get("license_velocity"), 0.0))
-    velocity_risk = float(np.clip(0.5 - (1.0 / (1.0 + np.exp(-license_velocity))), 0.0, 1.0))
+    velocity_risk = float(
+        np.clip(0.5 - (1.0 / (1.0 + np.exp(-license_velocity))), 0.0, 1.0)
+    )
 
     # Weighted to keep risk interpretable and less coupled to opportunity score.
     risk = (
@@ -684,7 +692,9 @@ def predict_cmf_sync(request: RecommendationRequest) -> RecommendationResponse:
                 )
     else:
         if _STRICT_LEARNED_ONLY:
-            logger.error("Strict learned mode enabled but learned model is unavailable.")
+            logger.error(
+                "Strict learned mode enabled but learned model is unavailable."
+            )
             scored = []
         else:
             # --- Heuristic fallback path (original) ---
@@ -694,7 +704,12 @@ def predict_cmf_sync(request: RecommendationRequest) -> RecommendationResponse:
             )
             scored = [
                 _score_one(
-                    zid, ztype, zlabel, subtype, request.risk_tolerance, request.price_tier
+                    zid,
+                    ztype,
+                    zlabel,
+                    subtype,
+                    request.risk_tolerance,
+                    request.price_tier,
                 )
                 for zid, ztype, zlabel, _boro in candidates
             ]

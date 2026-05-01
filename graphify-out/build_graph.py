@@ -33,11 +33,13 @@ print(f"Merged: {len(deduped_nodes)} nodes, {len(all_edges)} edges")
 
 # Build graph using graphify
 from graphify.build import build_from_json
+
 G = build_from_json(merged)
 print(f"Graph built: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
 
 # Cluster communities
 from graphify.cluster import cluster
+
 raw_communities = cluster(G)
 # Convert to node-to-community mapping if generate() expects dict[int, list[str]]
 # The signature was: communities: 'dict[int, list[str]]'
@@ -46,6 +48,7 @@ print(f"Communities: {len(communities)}")
 
 # Generate outputs
 from graphify.report import generate
+
 report = generate(
     G=G,
     communities=communities,
@@ -55,7 +58,7 @@ report = generate(
     surprise_list=[],
     detection_result={"total_files": 1, "total_words": 1000},
     token_cost={"input": 0, "output": 0},
-    root='root'
+    root="root",
 )
 Path("graphify-out/GRAPH_REPORT.md").write_text(report)
 print("GRAPH_REPORT.md written")

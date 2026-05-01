@@ -35,7 +35,14 @@ class ModelConfig:
     ridge_random_state: int = 42
     forecast_min_reviews: int = 3
     # Similarity
-    similarity_features: tuple[str, ...] = field(default_factory=lambda: ('demand_score', 'halal_supply_rate', 'gap_score', 'viability_score'))
+    similarity_features: tuple[str, ...] = field(
+        default_factory=lambda: (
+            "demand_score",
+            "halal_supply_rate",
+            "gap_score",
+            "viability_score",
+        )
+    )
     similarity_top_n: int = 3
     # Viability/Risk Thresholds
     viability_low_threshold: float = 0.6
@@ -43,8 +50,34 @@ class ModelConfig:
     risk_high_threshold: float = 0.66
     risk_medium_threshold: float = 0.33
     # Domain
-    halal_cuisines: frozenset[str] = field(default_factory=lambda: frozenset({'halal', 'middle eastern', 'pakistani', 'bangladeshi', 'afghan', 'egyptian', 'turkish', 'moroccan', 'lebanese', 'persian/iranian'}))
-    halal_keywords: tuple[str, ...] = field(default_factory=lambda: ('halal', 'no pork', 'pork free', 'muslim', 'zabiha', 'zabihah', 'halal option', 'halal certified'))
+    halal_cuisines: frozenset[str] = field(
+        default_factory=lambda: frozenset(
+            {
+                "halal",
+                "middle eastern",
+                "pakistani",
+                "bangladeshi",
+                "afghan",
+                "egyptian",
+                "turkish",
+                "moroccan",
+                "lebanese",
+                "persian/iranian",
+            }
+        )
+    )
+    halal_keywords: tuple[str, ...] = field(
+        default_factory=lambda: (
+            "halal",
+            "no pork",
+            "pork free",
+            "muslim",
+            "zabiha",
+            "zabihah",
+            "halal option",
+            "halal certified",
+        )
+    )
 
 
 CFG = ModelConfig()

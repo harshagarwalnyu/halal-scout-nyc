@@ -90,15 +90,17 @@ def main() -> None:
 
     # Sidebar filters
     with st.sidebar:
-        st.markdown("<h2 style='color: #e9c46a;'>🕌 Halal Scout</h2>", unsafe_allow_html=True)
+        st.markdown(
+            "<h2 style='color: #e9c46a;'>🕌 Halal Scout</h2>", unsafe_allow_html=True
+        )
         st.caption(
             "Build your shortlist by choosing the borough, market type, and risk level."
         )
         form_state = render_input_form()
-        
+
         if st.button("🔄 Quick Reset", use_container_width=True):
             st.rerun()
-            
+
         st.divider()
         st.caption(f"Neighborhoods in model: **{len(df_all)}**")
 
@@ -133,19 +135,17 @@ def main() -> None:
     filtered = filtered_all.head(limit_val)
 
     # Tabs
-    tab_map, tab_compare, tab_analytics = st.tabs([
-        "📍 Map & Shortlist", 
-        "⚖️ Compare", 
-        "📊 Analytics"
-    ])
+    tab_map, tab_compare, tab_analytics = st.tabs(
+        ["📍 Map & Shortlist", "⚖️ Compare", "📊 Analytics"]
+    )
 
     with tab_map:
         st.markdown("### 🗺️ Opportunity Map")
         col_map, col_summary = st.columns([2, 1])
-        
+
         with col_map:
             render_map_view(filtered_all)
-            
+
         with col_summary:
             st.markdown("#### 🏆 Top 3 Summary")
             top_3 = filtered.head(3)
@@ -154,10 +154,15 @@ def main() -> None:
             for _, row in top_3.iterrows():
                 with st.container():
                     st.markdown(f"**{row['nta_id']}**")
-                    score_val = row.get('final_score_adjusted', row.get('final_score', 0.0))
+                    score_val = row.get(
+                        "final_score_adjusted", row.get("final_score", 0.0)
+                    )
                     c1, c2 = st.columns(2)
                     c1.metric("Score", f"{score_val:.3f}")
-                    c2.markdown(f"<div class='market-badge badge-{row['market_type'].lower().replace(' ', '-')}'>{row['market_type']}</div>", unsafe_allow_html=True)
+                    c2.markdown(
+                        f"<div class='market-badge badge-{row['market_type'].lower().replace(' ', '-')}'>{row['market_type']}</div>",
+                        unsafe_allow_html=True,
+                    )
             st.caption("Scroll down for full details and review evidence.")
 
         st.divider()
@@ -171,12 +176,14 @@ def main() -> None:
 
     with tab_compare:
         from frontend.components.comparison import render_comparison_view
+
         render_comparison_view(filtered)
 
     with tab_analytics:
         st.subheader("📊 Market Analytics")
         # results_panel will handle the rich analytics in step 5
         from frontend.components.results_panel import render_analytics_view
+
         render_analytics_view(filtered_all, filtered)
 
 
