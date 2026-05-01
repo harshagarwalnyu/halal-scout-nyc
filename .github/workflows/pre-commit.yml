@@ -1,0 +1,72 @@
+name: pre-commit
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "notebooks/**"
+      - "data/**"
+      - "*.md"
+  pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "notebooks/**"
+      - "data/**"
+      - "*.md"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+
+permissions:
+  contents: write
+
+jobs:
+  pre-commit:
+    name: Run pre-commit hooks (auto-fix)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # Check out the actual branch head so auto-fixes can be pushed back
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - run: uv tool install pre-commit
+
+      - name: Cache pre-commit environments
+        uses: actions/cache@v5
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-${{ runner.os }}-
+
+      - name: Run all pre-commit hooks
+        id: hooks
+        run: SKIP=no-commit-to-branch pre-commit run --all-files --show-diff-on-failure
+        continue-on-error: true
+
+      - name: Commit and push auto-fixes
+        id: autofix
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "fix(pre-commit): apply automatic hook fixes"
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com"
+
+      # hooks failed + nothing auto-fixed = issue needing manual attention
+      - name: Fail on unfixable hook errors
+        if: steps.hooks.outcome == 'failure' && steps.autofix.outputs.changes_detected == 'false'
+        run: |
+          echo "::error::pre-commit found issues that need manual fixes — check the diff above"
+          exit 1
