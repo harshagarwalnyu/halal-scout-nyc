@@ -1424,7 +1424,7 @@ def test_cmf_score_parametrized_range(features, min_score):
     assert result.composite_score >= min_score
 
 
-def test_cmf_score_nan_features_does_not_crash():
+def test_cmf_score_nan_features_composite_score_in_range():
     result = score_zone_for_concept(
         {"halal_related_share": float("nan"), "trip_count": float("inf")}, "salad_bowls"
     )

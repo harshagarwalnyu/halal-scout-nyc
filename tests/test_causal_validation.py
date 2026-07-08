@@ -350,7 +350,7 @@ def test_load_causal_frame_datetime(tmp_path) -> None:
     path = tmp_path / "test_dt.csv"
     df.to_csv(path, index=False)
     # The read_csv will need to parse dates
-    l1 = load_causal_frame(path, "time")
+    load_causal_frame(path, "time")
     # Wait, load_causal_frame doesn't pass parse_dates to read_csv.
     # So it will be string, not datetime64, unless we convert it.
     # Ah, let's see causal.py line 829
