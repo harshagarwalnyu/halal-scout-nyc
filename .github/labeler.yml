@@ -1,0 +1,32 @@
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - docs/**
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - frontend/**
+
+models:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/models/**
+
+data-pipeline:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/data/**
+          - src/etl/**
+          - scripts/**
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - tests/**
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/**
