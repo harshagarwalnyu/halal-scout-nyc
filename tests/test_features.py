@@ -1596,8 +1596,6 @@ def test_build_zone_year_matrix_gemini_overlap_drop_coverage(
     # Also need to make sure Path.exists() returns True for the cache
     from pathlib import Path
 
-    original_exists = Path.exists
-
     def mock_exists(self):
         if "gemini_labels_full.csv" in str(self):
             return True

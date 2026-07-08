@@ -3,10 +3,22 @@
 from __future__ import annotations
 
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
-from src.config.constants import FM_COLS
+from src.config.constants import FM_COLS, MODEL_DIR, PROCESSED_DIR
+from src.data.quality import prepare_training_frame
+from src.models.cmf_score import (
+    LearnedScoringModel,
+    compute_opening_score,
+    score_zone_for_concept,
+)
+from src.models.ranking_model import LearnedRanker
+
+DATA_DIR = Path(PROCESSED_DIR)
+_MODEL_DIR = Path(MODEL_DIR)
 
 
 def load_data() -> tuple[pd.DataFrame, pd.Series]:
