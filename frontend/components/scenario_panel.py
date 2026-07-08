@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.utils.taxonomy import all_known_subtypes, canonical_subtype
-
 from frontend.components._form_keys import FORM_KEYS
 
 _DISPLAY_NAMES: dict[str, str] = {

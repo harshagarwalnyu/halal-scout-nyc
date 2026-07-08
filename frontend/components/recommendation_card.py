@@ -232,7 +232,6 @@ def _opportunity_summary(
     """Generate plain-English 2-sentence opportunity summary from signal values."""
     d = float(demand or 0)
     g = float(gap or 0)
-    v = float(viability or 0)
 
     demand_txt = (
         "strong halal interest"
@@ -273,7 +272,6 @@ def render_recommendation_card(
     demand_score = row.get("demand_score", 0.0)
     gap_score = row.get("gap_score", 0.0)
     viability_score = row.get("viability_score", 0.5)
-    halal_supply_rate = row.get("halal_supply_rate", 0.0)
     halal_cuisine_diversity = row.get("halal_cuisine_diversity", 0)
     risk_bucket = str(row.get("risk_bucket", "Unknown"))
     risk_confidence = str(row.get("risk_confidence", ""))
@@ -284,8 +282,6 @@ def render_recommendation_card(
     similar_ntas = [s.strip() for s in similar_ntas_raw.split(",") if s.strip()]
     latent_demand_score = row.get("latent_demand_score", None)
     cluster_confidence = row.get("cluster_confidence", None)
-
-    badge_class = market_type.lower().replace(" ", "-")
 
     with st.container():
         # Header
