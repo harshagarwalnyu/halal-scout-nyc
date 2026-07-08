@@ -1,34 +1,15 @@
 # NYC Halal Market Intelligence & Opportunity Engine
 
-## Data Availability
+**Where should the next halal restaurant in NYC open?** A three-phase ML pipeline that fuses Bayesian demand modeling, LLM-labeled review signals, spatial statistics (Local Moran's I), and GMM risk overlays to rank all 260+ NYC neighborhoods by halal market opportunity — served through an interactive Streamlit dashboard.
 
-Due to GitHub file size limits and dataset licensing constraints, several large raw datasets are not stored directly in the repository. Please retrieve them via the repository Releases section.
+```bash
+# Dashboard in one command (pre-computed outputs included)
+uv venv && source .venv/bin/activate && uv pip install -r requirements.txt && streamlit run frontend/app.py
+```
 
----
+Jump to: [Architecture](#analytical-pipeline-architecture) · [Dashboard](#dashboard-features) · [Full setup](#execution-guide) · [Design doc](DESIGN.md)
 
-## Pivot Note (read first)
-
-This project moved from [`main-pre-pivot`](https://github.com/Amanda-dong/CS473-FML/tree/main-pre-pivot) to the current [`main`](https://github.com/Amanda-dong/CS473-FML/tree/main) implementation.
-
-**Why we changed:**
-In the integrated feature pipeline, missing-value pressure was high in several joins, which increased fallback/imputation usage (including median-based fills). That made some outputs less reliable for decision-facing recommendations. The current branch prioritizes realistic model-facing behavior and clearer output interpretation.
-
-**What `main-pre-pivot` used (simple summary):**
-- Broader integrated ETL/feature datasets across multiple NYC sources (see [pre-pivot design doc](https://github.com/Amanda-dong/CS473-FML/blob/main-pre-pivot/docs/Design.md) for the full list)
-- Full ML stack including trajectory clustering (k-means / GMM), survival modeling (Cox PH + Random Survival Forest), learned scoring (XGBoost), ranking (LambdaMART), and explainability modules
-
-**What we gained from the pivot:**
-- Elimination of cascading imputation chains that obscured signal provenance
-- Tighter control over each scoring component — every number in the final output is traceable to a documented formula
-- A cleaner separation between uncertainty (Bayesian credible intervals) and missing data, rather than blending them via median fills
-
-**What we still reuse from pre-pivot:**
-We explicitly reuse partial datasets, especially `data/raw/gemini_labels_full.csv`, `data/raw/yelp_reviews_with_zones.csv`, and `data/processed/inspections.parquet`. The code that generates these reused datasets lives in the `main-pre-pivot` branch. We do not claim full algorithm reuse — the current branch uses a different, purpose-built `halal_*` phase pipeline (described in [DESIGN.md](DESIGN.md)).
-
-**Branch references:**
-- [main](https://github.com/Amanda-dong/CS473-FML/tree/main) — current implementation
-- [main-pre-pivot](https://github.com/Amanda-dong/CS473-FML/tree/main-pre-pivot) — prior full-stack approach
-- [Pre-pivot design doc](https://github.com/Amanda-dong/CS473-FML/blob/main-pre-pivot/docs/Design.md)
+> **Data note:** several large raw datasets exceed GitHub file limits and ship via the repository Releases section. Pre-computed model outputs in `data/output/` are included, so the dashboard runs out of the box. Project history and dataset provenance: see [Project History](#project-history--pivot-note).
 
 ---
 
@@ -153,6 +134,27 @@ The pipeline includes a comprehensive **validation framework** (`tests/`) coveri
 - **Spatial Autoregressive Models (SAR)**: Explicitly modeling demand spillover across neighboring NTAs using spatial lag operators — currently in prototyping
 - **Dynamic GMM (Hidden Markov)**: Evolving the static risk model into a temporal state-transition model to capture hygiene trajectory, not just current snapshot
 - **Neural Demand Embeddings**: Fine-tuned sentence transformers on the Yelp + Gemini label corpus to capture semantic halal interest profiles beyond keyword heuristics
+
+---
+
+## Project History & Pivot Note
+
+This project originated as NYU CS473 coursework and moved from [`main-pre-pivot`](https://github.com/Amanda-dong/CS473-FML/tree/main-pre-pivot) to the current implementation.
+
+**Why we changed:**
+In the integrated feature pipeline, missing-value pressure was high in several joins, which increased fallback/imputation usage (including median-based fills). That made some outputs less reliable for decision-facing recommendations. The current implementation prioritizes realistic model-facing behavior and clearer output interpretation.
+
+**What `main-pre-pivot` used (simple summary):**
+- Broader integrated ETL/feature datasets across multiple NYC sources (see [pre-pivot design doc](https://github.com/Amanda-dong/CS473-FML/blob/main-pre-pivot/docs/Design.md) for the full list)
+- Full ML stack including trajectory clustering (k-means / GMM), survival modeling (Cox PH + Random Survival Forest), learned scoring (XGBoost), ranking (LambdaMART), and explainability modules
+
+**What we gained from the pivot:**
+- Elimination of cascading imputation chains that obscured signal provenance
+- Tighter control over each scoring component — every number in the final output is traceable to a documented formula
+- A cleaner separation between uncertainty (Bayesian credible intervals) and missing data, rather than blending them via median fills
+
+**What we still reuse from pre-pivot:**
+We explicitly reuse partial datasets, especially `data/raw/gemini_labels_full.csv`, `data/raw/yelp_reviews_with_zones.csv`, and `data/processed/inspections.parquet`. The code that generates these reused datasets lives in the `main-pre-pivot` branch of the course repository. We do not claim full algorithm reuse — the current implementation uses a different, purpose-built `halal_*` phase pipeline (described in [DESIGN.md](DESIGN.md)).
 
 ---
 
