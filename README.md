@@ -1,5 +1,10 @@
 # NYC Halal Market Intelligence & Opportunity Engine
 
+[![CI](https://github.com/harshagarwalnyu/halal-scout-nyc/actions/workflows/ci.yml/badge.svg)](https://github.com/harshagarwalnyu/halal-scout-nyc/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/harshagarwalnyu/halal-scout-nyc/actions/workflows/codeql.yml/badge.svg)](https://github.com/harshagarwalnyu/halal-scout-nyc/actions/workflows/codeql.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 **Where should the next halal restaurant in NYC open?** A three-phase ML pipeline that fuses Bayesian demand modeling, LLM-labeled review signals, spatial statistics (Local Moran's I), and GMM risk overlays to rank all 260+ NYC neighborhoods by halal market opportunity — served through an interactive Streamlit dashboard.
 
 ```bash
