@@ -9,6 +9,14 @@ from fastapi.testclient import TestClient
 
 from src.api.main import app
 
+from pathlib import Path
+
+_MODEL_AVAILABLE = Path("data/models/scoring_model.joblib").exists()
+requires_model = pytest.mark.skipif(
+    not _MODEL_AVAILABLE,
+    reason="trained scoring model not present (artifact ships via Releases)",
+)
+
 
 @pytest.fixture
 def client():
@@ -78,6 +86,7 @@ async def test_datasets_endpoint_returns_list() -> None:
     assert "name" in data[0]
 
 
+@requires_model
 @pytest.mark.asyncio
 async def test_predict_cmf_healthy_indian() -> None:
     async with AsyncClient(
@@ -93,6 +102,7 @@ async def test_predict_cmf_healthy_indian() -> None:
     assert len(data["recommendations"]) == 3
 
 
+@requires_model
 @pytest.mark.asyncio
 async def test_predict_cmf_ramen() -> None:
     """CMF endpoint must handle non-healthy cuisine types."""
@@ -122,6 +132,7 @@ async def test_predict_cmf_custom_cuisine() -> None:
     assert resp.status_code == 200
 
 
+@requires_model
 @pytest.mark.asyncio
 async def test_predict_cmf_returns_sorted_scores() -> None:
     async with AsyncClient(
@@ -225,6 +236,7 @@ async def test_cmf_predict_rejects_invalid_price_tier() -> None:
 # ── internal logic tests ───────────────────────────────────────────────────────
 
 
+@requires_model
 def test_score_with_learned_model_uses_latest_time_key_and_survival_score() -> None:
     from src.api.routers.recommendations import _score_with_learned_model
 
@@ -433,6 +445,7 @@ def test_score_with_learned_model_missing_zone() -> None:
     assert rec is None
 
 
+@requires_model
 def test_score_with_learned_model_predict_fallback() -> None:
     from src.api.routers.recommendations import _score_with_learned_model
 
@@ -478,6 +491,7 @@ def test_score_with_learned_model_shap_tree_explainer() -> None:
     assert "f1" in rec.feature_contributions
 
 
+@requires_model
 def test_predict_cmf_sync_borough_fallback(monkeypatch) -> None:
     from src.api.routers.recommendations import predict_cmf_sync
     from src.schemas.requests import RecommendationRequest
@@ -494,6 +508,7 @@ def test_predict_cmf_sync_borough_fallback(monkeypatch) -> None:
     assert len(resp.recommendations) > 0
 
 
+@requires_model
 def test_predict_cmf_sync_heuristic_path(monkeypatch) -> None:
     from src.api.routers.recommendations import predict_cmf_sync
     from src.schemas.requests import RecommendationRequest
@@ -508,6 +523,7 @@ def test_predict_cmf_sync_heuristic_path(monkeypatch) -> None:
     assert resp.recommendations[0].scoring_path == "heuristic"
 
 
+@requires_model
 def test_predict_cmf_sync_heuristic_fallback_mixed(monkeypatch) -> None:
     from src.api.routers.recommendations import predict_cmf_sync
     from src.schemas.requests import RecommendationRequest
@@ -541,6 +557,7 @@ async def test_predict_trajectory_nonexistent_zone_type() -> None:
     assert "trajectory_cluster" in resp.json()
 
 
+@requires_model
 def test_score_with_learned_model_survival_predict(monkeypatch) -> None:
     from src.api.routers.recommendations import _score_with_learned_model
     import numpy as np
@@ -570,6 +587,7 @@ def test_score_with_learned_model_survival_predict(monkeypatch) -> None:
     assert res.survival_risk == pytest.approx(0.2)  # 1.0 - 0.8
 
 
+@requires_model
 def test_score_with_learned_model_survival_no_score_defaults_to_half() -> None:
     from src.api.routers.recommendations import _score_with_learned_model
 
