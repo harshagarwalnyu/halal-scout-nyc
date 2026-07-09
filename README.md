@@ -11,7 +11,7 @@
 | src/api/routers/\_\_init\_\_.py           |        0 |        0 |    100% |           |
 | src/api/routers/datasets.py               |        7 |        0 |    100% |           |
 | src/api/routers/health.py                 |       23 |        5 |     78% |     22-26 |
-| src/api/routers/recommendations.py        |      267 |       42 |     84% |66-67, 79-82, 91-95, 104, 272-276, 294-300, 314, 366-368, 373-374, 590-592, 701-705, 738-747 |
+| src/api/routers/recommendations.py        |      267 |       58 |     78% |66-67, 79-82, 91-95, 104, 272-276, 288-301, 314, 366-368, 373-374, 590-592, 661, 665-688, 701-705, 738-747 |
 | src/config/\_\_init\_\_.py                |        4 |        0 |    100% |           |
 | src/config/constants.py                   |        7 |        0 |    100% |           |
 | src/config/model\_config.py               |       36 |        0 |    100% |           |
@@ -43,7 +43,7 @@
 | src/features/microzones.py                |       10 |        0 |    100% |           |
 | src/features/rent\_trajectory.py          |       13 |        0 |    100% |           |
 | src/features/zone\_crosswalk.py           |      112 |       12 |     89% |76, 89-96, 150-152 |
-| src/halal\_demand.py                      |       94 |       18 |     81% |41, 133-137, 176, 183-200 |
+| src/halal\_demand.py                      |       96 |        5 |     95% |41, 134-138, 177 |
 | src/halal\_forecast.py                    |      120 |       50 |     58% |43, 75-181, 299-357 |
 | src/halal\_kmeans.py                      |       98 |        5 |     95% |59, 64-66, 92, 130 |
 | src/halal\_opportunity.py                 |       29 |        0 |    100% |           |
@@ -56,7 +56,7 @@
 | src/models/cmf\_score.py                  |      110 |        3 |     97% |   247-249 |
 | src/models/explainability.py              |       64 |        0 |    100% |           |
 | src/models/model\_loader.py               |       87 |        0 |    100% |           |
-| src/models/ranking\_model.py              |       67 |        0 |    100% |           |
+| src/models/ranking\_model.py              |       67 |       15 |     78% |     54-73 |
 | src/models/survival\_model.py             |      262 |        2 |     99% |   530-535 |
 | src/models/trajectory\_model.py           |      135 |        0 |    100% |           |
 | src/nlp/\_\_init\_\_.py                   |        3 |        0 |    100% |           |
@@ -85,7 +85,7 @@
 | src/validation/backtesting.py             |      149 |        0 |    100% |           |
 | src/validation/causal.py                  |      335 |       19 |     94% |326, 339, 418, 436, 599-613, 621-629, 639, 646, 649, 740-751 |
 | src/validation/run\_causal\_evaluation.py |       37 |        0 |    100% |           |
-| **TOTAL**                                 | **4528** |  **501** | **89%** |           |
+| **TOTAL**                                 | **4530** |  **519** | **89%** |           |
 
 
 ## Setup coverage badge
