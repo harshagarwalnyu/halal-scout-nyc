@@ -175,10 +175,9 @@ def build_demand() -> pd.DataFrame:
         )
     else:
         grouped["population"] = 0.0
+    _pop_nonzero = grouped["population"].mask(grouped["population"] == 0)
     grouped["demand_per_capita"] = (
-        ((grouped["halal_count"] / grouped["population"].replace(0, pd.NA)) * 1000)
-        .fillna(0.0)
-        .clip(lower=0.0)
+        ((grouped["halal_count"] / _pop_nonzero) * 1000).fillna(0.0).clip(lower=0.0)
     )
     # Bayesian Beta credible intervals (80%) for halal share
     h = grouped["halal_count"].clip(lower=0)
