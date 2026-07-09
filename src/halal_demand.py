@@ -112,7 +112,8 @@ def build_demand() -> pd.DataFrame:
     merged = reviews.copy()
     merged["review_date"] = pd.to_datetime(merged["review_date"], errors="coerce")
     reference_year = 2024
-    merged["review_year"] = merged["review_date"].dt.year.fillna(reference_year)
+    _years = merged["review_date"].dt.year
+    merged["review_year"] = _years.where(_years.notna(), reference_year).astype("int64")
     merged["decay_weight"] = (0.85 ** (reference_year - merged["review_year"])).clip(
         lower=0.1
     )
