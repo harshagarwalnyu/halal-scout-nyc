@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: renovatebot/github-action@d385c88822a237acaead89c462fa0aef7502748f # v41.0.11
+      - uses: renovatebot/github-action@87c405b9750f1b6affae06311395b50e3882d54f # v42.0.6
         with:
           token: ${{ github.token }}
         env:
