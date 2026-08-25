@@ -17,6 +17,13 @@ on:
       - "*.md"
       - ".github/ISSUE_TEMPLATE/**"
 
+  schedule:
+    # 07:00 UTC (03:00 ET) nightly. Catches drift this repo cannot catch on
+    # its own: a moved action tag, a new ubuntu-latest image, a transitive
+    # dependency that changed under an unpinned constraint.
+    - cron: "0 7 * * *"
+  workflow_dispatch:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -90,7 +97,7 @@ jobs:
             --cov=src \
             --cov-report=xml \
             --cov-report=term-missing \
-            --cov-fail-under=50 \
+            --cov-fail-under=85 \
             --junitxml=/tmp/pytest-results.xml
 
       - name: Upload test results
